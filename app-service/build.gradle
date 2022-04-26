@@ -1,0 +1,10 @@
+plugins{
+    id 'java'
+}
+
+dependencies {
+    implementation project(':app-repository')
+    implementation project(':app-entity')
+    implementation project(':app-model')
+
+}
