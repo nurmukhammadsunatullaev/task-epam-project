@@ -8,10 +8,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Types;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -44,20 +44,28 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public GiftCertificate save(GiftCertificate value) {
-        String insert = "INSERT INTO db_gift_certificate(name, description, price, duration, create_date, last_update_time) VALUES(?, ?, ?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        template.update(connection -> {
-            PreparedStatement ps = connection
-                    .prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, value.getName());
-            ps.setString(2, value.getDescription());
-            ps.setDouble(3, value.getPrice());
-            ps.setInt(4, value.getDuration());
-            ps.setDate(5, new Date(value.getCreateDate().getTime()));
-            ps.setDate(6, new Date(value.getLastUpdateDate().getTime()));
-            return ps;
-        }, keyHolder);
-        value.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
+        value.setLastUpdateDate(Instant.now().toString());
+        if(Objects.isNull(value.getId())){
+            String insert = "INSERT INTO db_gift_certificate(name, description, price, duration, create_date, last_update_time) VALUES(?, ?, ?, ?, ?, ?)";
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            template.update(connection -> {
+                value.setCreateDate(Instant.now().toString());
+                PreparedStatement ps = connection
+                        .prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, value.getName());
+                ps.setString(2, value.getDescription());
+                ps.setDouble(3, value.getPrice());
+                ps.setInt(4, value.getDuration());
+                ps.setString(5, value.getCreateDate());
+                ps.setString(6, value.getLastUpdateDate());
+                return ps;
+            }, keyHolder);
+            value.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
+        }
+        else {
+            String update = "UPDATE db_gift_certificate SET name = ?, description = ?, price = ?, duration = ?, last_update_time = ? WHERE id = ?";
+            template.update(update, value.getName(),value.getDescription(),value.getPrice(), value.getDuration(), value.getLastUpdateDate(), value.getId());
+        }
         return value;
     }
 

@@ -43,21 +43,27 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public Tag save(Tag value) {
-        String insert = "INSERT INTO db_tag(name) VALUES(?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        template.update(connection -> {
-            PreparedStatement ps = connection
-                    .prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, value.getName());
-            return ps;
-        }, keyHolder);
-        value.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
+        if(Objects.isNull(value.getId())){
+            String insert = "INSERT INTO db_tag(name) VALUES(?)";
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            template.update(connection -> {
+                PreparedStatement ps = connection
+                        .prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, value.getName());
+                return ps;
+            }, keyHolder);
+            value.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
+        }
+        else{
+            String update = "UPDATE db_tag SET name = ? WHERE id = ?";
+            template.update(update, value.getName(), value.getId());
+        }
         return value;
     }
 
     @Override
     public boolean delete(Long id) {
         String deleteById= "DELETE FROM db_tag WHERE id = ?";
-        return template.update(deleteById,new Object[] {id}) == 1;
+        return template.update(deleteById, id) == 1;
     }
 }

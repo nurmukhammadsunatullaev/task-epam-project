@@ -1,7 +1,9 @@
 package com.epam.esm.service;
 
+import com.epam.esm.entity.Tag;
 import com.epam.esm.model.GiftCertificateModel;
 import com.epam.esm.repository.custom.GiftCertificateRepository;
+import com.epam.esm.repository.custom.TagRepository;
 import com.epam.esm.service.custom.GiftCertificateService;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.service.mapper.GiftCertificateMapper;
@@ -18,6 +20,7 @@ import java.util.Optional;
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftCertificateRepository repository;
+    private final TagRepository tagRepository;
     private final GiftCertificateMapper mapper;
 
     @Override
@@ -36,6 +39,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional(rollbackFor = Exception.class)
     public GiftCertificateModel save(GiftCertificateModel value) {
         GiftCertificate gift = mapper.giftCertificateModelToGiftCertificate(value);
+        List<Tag> tags = gift.getTags();
+        tags.forEach(tagRepository::save);
         gift = repository.save(gift);
         return mapper.giftCertificateToGiftCertificateModel(gift);
     }

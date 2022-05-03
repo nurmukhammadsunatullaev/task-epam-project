@@ -4,7 +4,7 @@ import com.epam.esm.model.base.BaseModel;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,6 +13,7 @@ public class GiftCertificateModel extends BaseModel {
     private String description;
     private Double price;
     private Integer duration;
-    private Date createDate;
-    private Date lastUpdateDate;
+    private String createDate;
+    private String lastUpdateDate;
+    private List<TagModel> tags;
 }
