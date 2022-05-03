@@ -1,5 +1,6 @@
 package com.epam.esm.repository;
 
+import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.custom.TagRepository;
 import com.epam.esm.repository.mapper.TagRowMapper;
@@ -53,11 +54,18 @@ public class TagRepositoryImpl implements TagRepository {
                 return ps;
             }, keyHolder);
             value.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
+            List<GiftCertificate> gifts = value.getGifts();
+            if(gifts != null){
+                String gift_tag = "INSERT INTO db_gift_certificate_tag(tag_id, gift_certificate_id) VALUES(?, ?)";
+                gifts.forEach(giftCertificate -> template.update(gift_tag, value.getId(), giftCertificate.getId()));
+            }
         }
         else{
             String update = "UPDATE db_tag SET name = ? WHERE id = ?";
             template.update(update, value.getName(), value.getId());
         }
+
+
         return value;
     }
 

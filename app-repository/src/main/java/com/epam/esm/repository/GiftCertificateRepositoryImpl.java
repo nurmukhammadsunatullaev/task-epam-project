@@ -72,6 +72,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     @Override
     public boolean delete(Long id) {
         String deleteById= "DELETE FROM db_gift_certificate WHERE id = ?";
-        return template.update(deleteById,new Object[] {id}) == 1;
+        return template.update(deleteById, id) == 1;
     }
 }
