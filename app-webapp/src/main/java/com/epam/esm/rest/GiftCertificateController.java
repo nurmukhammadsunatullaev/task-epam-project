@@ -25,7 +25,7 @@ public class GiftCertificateController {
     @GetMapping("/{id}")
     public ResponseEntity<GiftCertificateModel> get(@PathVariable Long id){
         Optional<GiftCertificateModel> model = giftCertificateService.getById(id);
-        return model.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return model.map(ResponseEntity::ok).orElseGet(ResponseEntity.notFound()::build);
     }
 
     @PostMapping

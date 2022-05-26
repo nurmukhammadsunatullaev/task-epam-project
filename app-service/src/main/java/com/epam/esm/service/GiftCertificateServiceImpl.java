@@ -9,7 +9,6 @@ import com.epam.esm.service.custom.GiftCertificateService;
 import com.epam.esm.service.mapper.GiftCertificateMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,15 +36,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public GiftCertificateModel save(GiftCertificateModel value) {
         GiftCertificate gift = mapper.giftCertificateModelToGiftCertificate(value);
         List<Tag> tags = gift.getTags();
-        gift = repository.save(gift);
-        GiftCertificate finalGift = gift;
+        GiftCertificate finalGift = repository.save(gift);
         tags.forEach(tag -> tag.setGifts(Collections.singletonList(finalGift)));
         tags.forEach(tagRepository::save);
-        return mapper.giftCertificateToGiftCertificateModel(gift);
+        return mapper.giftCertificateToGiftCertificateModel(finalGift);
     }
 
     @Override

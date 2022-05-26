@@ -7,7 +7,6 @@ import com.epam.esm.service.custom.TagService;
 import com.epam.esm.service.mapper.TagMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +31,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public TagModel save(TagModel value){
         Tag tag = mapper.tagModelToTag(value);
         tag = repository.save(tag);
